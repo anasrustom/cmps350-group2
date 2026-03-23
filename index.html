@@ -1,14 +1,102 @@
 <!DOCTYPE html>
-<html lang=""en"">
+<html>
+
 <head>
-  <meta charset=""UTF-8"">
-  <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
-  <title>index</title>
-  <link rel=""stylesheet"" href=""css/base.css"">
-  <link rel=""stylesheet"" href=""css/components.css"">
-  <link rel=""stylesheet"" href=""css/responsive.css"">
+  <title>home</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/responsive.css">
 </head>
+
 <body>
-  <script src=""js/app.js"" defer></script>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <a href="index.html">campus feed</a>
+      </div>
+
+      <nav>
+        <ul class="nav-list">
+          <li class="nav-item active">
+            <a href="index.html">home</a>
+          </li>
+          <li class="nav-item">
+            <a href="profile.html">profile</a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-user">
+        <div class="avatar avatar-sm" id="sidebar-avatar"></div>
+        <div>
+          <div class="sidebar-user-name" id="sidebar-user-name">current user</div>
+          <div class="sidebar-user-handle" id="sidebar-user-handle">@currentuser</div>
+        </div>
+      </div>
+
+      <button class="btn btn-secondary btn-full" type="button" id="logout-btn">log out</button>
+    </aside>
+
+    <main class="feed-column">
+      <header class="page-header">
+        <h2>home</h2>
+      </header>
+
+      <div class="alert alert-success hidden" id="feed-message"></div>
+
+      <section class="composer">
+        <form id="composer-form">
+          <div class="composer-inner">
+            <div class="avatar avatar-md" id="composer-avatar"></div>
+
+            <div class="composer-content">
+              <label class="form-label" for="composer-text">what's on your mind?</label>
+              <textarea class="form-textarea" id="composer-text" name="content" placeholder="write a post"></textarea>
+
+              <div class="composer-footer">
+                <span class="char-count" id="composer-count">0</span>
+                <button class="btn btn-primary" type="submit" id="composer-submit">post</button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </section>
+
+      <section>
+        <header class="page-header">
+          <h2>feed</h2>
+        </header>
+
+        <div id="feed-list">
+          <div class="empty-state" id="feed-empty-state">
+            <p>no posts to show yet</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <aside class="right-panel">
+      <section class="who-to-follow">
+        <h3>who to follow</h3>
+
+        <div class="follow-list" id="suggestions-list">
+          <div class="empty-state">
+            <p>suggestions will appear here</p>
+          </div>
+        </div>
+      </section>
+    </aside>
+  </div>
+
+  <script src="js/seed.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/follow.js"></script>
+  <script src="js/feed.js"></script>
+  <script src="js/posts.js"></script>
+  <script src="js/comments.js"></script>
+  <script src="js/app.js"></script>
 </body>
+
 </html>

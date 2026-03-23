@@ -1,0 +1,115 @@
+/* responsive layout rules */
+
+/* tablet and smaller */
+@media (max-width: 900px) {
+    .app-layout {
+        grid-template-columns: 1fr;
+        width: 95%;
+    }
+
+    .sidebar,
+    .feed-column,
+    .right-panel {
+        width: 100%;
+    }
+
+    .auth-card {
+        width: 100%;
+    }
+
+    .profile-stats {
+        flex-wrap: wrap;
+    }
+
+    .post-actions {
+        flex-wrap: wrap;
+    }
+}
+
+/* phone */
+@media (max-width: 600px) {
+    .auth-page {
+        padding: 1rem 0.5rem;
+    }
+
+    .app-layout {
+        width: 100%;
+        margin: 0;
+    }
+
+    .sidebar,
+    .page-header,
+    .composer,
+    .post-card,
+    .who-to-follow,
+    .profile-header,
+    .comment-card,
+    .auth-card {
+        border-radius: 0;
+    }
+
+    .nav-list {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    .nav-item {
+        flex: 1 1 0;
+    }
+
+    .nav-item a {
+        justify-content: center;
+        padding: 0.5rem;
+    }
+
+    .composer-inner {
+        flex-direction: column;
+    }
+
+    .composer-footer {
+        justify-content: space-between;
+    }
+
+    .page-header,
+    .composer,
+    .post-card,
+    .who-to-follow,
+    .comment-card {
+        padding: 0.75rem;
+    }
+
+    .profile-cover {
+        height: 120px;
+    }
+
+    .profile-avatar-wrap {
+        padding: 0 1rem;
+    }
+
+    .profile-info {
+        padding: 0 1rem;
+    }
+
+    .profile-stats {
+        padding: 0 1rem;
+    }
+
+    .profile-actions {
+        padding: 0 1rem;
+        justify-content: flex-start;
+    }
+
+    .follow-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .btn {
+        padding: 0.5rem 1rem;
+    }
+
+    .avatar-lg {
+        width: 64px;
+        height: 64px;
+    }
+}

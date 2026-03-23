@@ -1,4 +1,4 @@
-/* css variables — all our colors, sizes, and spacing in one place */
+/* css variables - all our colors, sizes, and spacing in one place */
 :root {
     /* colors */
     --color-primary: #22c55e;
@@ -46,8 +46,8 @@
     --feed-max-width: 600px;
 }
 
-/* reset: clears browser default margins and padding so things
-   look the same across chrome, firefox, safari etc */
+/* reset: clears browser defaults so things look
+   consistent across chrome, firefox, safari etc */
 *,
 *::before,
 *::after {
@@ -56,7 +56,6 @@
     padding: 0;
 }
 
-/* base body styles */
 html {
     font-size: 16px;
 }
@@ -67,7 +66,6 @@ body {
     color: var(--color-text-primary);
     background-color: var(--color-bg);
     line-height: 1.5;
-    min-height: 100vh;
 }
 
 /* headings */
@@ -114,13 +112,13 @@ img {
     display: block;
 }
 
-/* strip list bullets, we'll style lists ourselves */
+/* strip list bullets, we'll style them ourselves */
 ul,
 ol {
     list-style: none;
 }
 
-/* buttons and inputs inherit the font so they don't look different */
+/* buttons and inputs inherit the font so they don't look odd */
 button {
     cursor: pointer;
     font-family: var(--font-family);

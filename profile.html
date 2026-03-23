@@ -1,14 +1,143 @@
 <!DOCTYPE html>
-<html lang=""en"">
+<html>
+
 <head>
-  <meta charset=""UTF-8"">
-  <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
   <title>profile</title>
-  <link rel=""stylesheet"" href=""css/base.css"">
-  <link rel=""stylesheet"" href=""css/components.css"">
-  <link rel=""stylesheet"" href=""css/responsive.css"">
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/responsive.css">
 </head>
+
 <body>
-  <script src=""js/app.js"" defer></script>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <a href="index.html">campus feed</a>
+      </div>
+
+      <nav>
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a href="index.html">home</a>
+          </li>
+          <li class="nav-item active">
+            <a href="profile.html">profile</a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-user">
+        <img class="avatar avatar-sm" id="sidebar-avatar" src="https://via.placeholder.com/32" alt="user avatar">
+        <div>
+          <div class="sidebar-user-name" id="sidebar-user-name">current user</div>
+          <div class="sidebar-user-handle" id="sidebar-user-handle">@currentuser</div>
+        </div>
+      </div>
+
+      <button class="btn btn-secondary btn-full" type="button" id="logout-btn">log out</button>
+    </aside>
+
+    <main class="feed-column">
+      <header class="page-header">
+        <h2>profile</h2>
+      </header>
+
+      <section class="profile-header">
+        <div class="profile-cover"></div>
+
+        <div class="profile-avatar-wrap">
+          <img class="avatar avatar-lg" id="profile-avatar" src="https://via.placeholder.com/80" alt="profile avatar">
+        </div>
+
+        <div class="profile-info">
+          <h1 class="profile-name" id="profile-name">user name</h1>
+          <p class="profile-handle" id="profile-handle">@username</p>
+          <p class="profile-bio" id="profile-bio">this is the user bio.</p>
+        </div>
+
+        <div class="profile-stats">
+          <div class="stat-item">
+            <span class="stat-count" id="profile-post-count">0</span>
+            <span class="stat-label">posts</span>
+          </div>
+
+          <div class="stat-item">
+            <span class="stat-count" id="profile-following-count">0</span>
+            <span class="stat-label">following</span>
+          </div>
+
+          <div class="stat-item">
+            <span class="stat-count" id="profile-follower-count">0</span>
+            <span class="stat-label">followers</span>
+          </div>
+        </div>
+
+        <div class="profile-actions">
+          <button class="btn btn-primary hidden" type="button" id="edit-profile-btn">edit profile</button>
+          <button class="btn btn-secondary hidden" type="button" id="follow-user-btn">follow</button>
+        </div>
+      </section>
+
+      <div class="alert alert-success hidden" id="profile-message"></div>
+
+      <section class="post-card hidden" id="profile-edit-section">
+        <header>
+          <h3>edit profile</h3>
+        </header>
+
+        <form id="profile-edit-form">
+          <div class="form-group">
+            <label class="form-label" for="profile-avatar-input">avatar url</label>
+            <input class="form-input" type="url" id="profile-avatar-input" name="avatar"
+              placeholder="https://example.com/avatar.jpg">
+            <div class="form-error hidden" id="profile-avatar-error"></div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="profile-bio-input">bio</label>
+            <textarea class="form-textarea" id="profile-bio-input" name="bio"
+              placeholder="write a short bio"></textarea>
+            <div class="form-error hidden" id="profile-bio-error"></div>
+          </div>
+
+          <div class="profile-actions">
+            <button class="btn btn-primary" type="submit" id="profile-save-btn">save changes</button>
+            <button class="btn btn-ghost" type="button" id="profile-cancel-btn">cancel</button>
+          </div>
+        </form>
+      </section>
+
+      <section>
+        <header class="page-header">
+          <h2>posts</h2>
+        </header>
+
+        <div id="profile-posts-list">
+          <div class="empty-state" id="profile-empty-state">
+            <p>no posts yet</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <aside class="right-panel">
+      <section class="who-to-follow">
+        <h3>who to follow</h3>
+
+        <div class="follow-list" id="suggestions-list">
+          <div class="empty-state">
+            <p>suggestions will appear here</p>
+          </div>
+        </div>
+      </section>
+    </aside>
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/follow.js"></script>
+  <script src="js/profile.js"></script>
 </body>
+
 </html>

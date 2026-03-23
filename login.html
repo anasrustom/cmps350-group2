@@ -1,14 +1,52 @@
 <!DOCTYPE html>
-<html lang=""en"">
+<html>
+
 <head>
-  <meta charset=""UTF-8"">
-  <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
   <title>login</title>
-  <link rel=""stylesheet"" href=""css/base.css"">
-  <link rel=""stylesheet"" href=""css/components.css"">
-  <link rel=""stylesheet"" href=""css/responsive.css"">
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/responsive.css">
 </head>
+
 <body>
-  <script src=""js/app.js"" defer></script>
+  <main class="auth-page">
+    <section class="auth-card">
+      <header>
+        <h1>log in</h1>
+        <p class="auth-subtitle">enter your email and password to continue</p>
+      </header>
+
+      <div class="alert alert-error hidden" id="login-message"></div>
+
+      <form id="login-form">
+        <div class="form-group">
+          <label class="form-label" for="login-email">email</label>
+          <input class="form-input" type="email" id="login-email" name="email" placeholder="you@example.com" required
+            autofocus>
+          <div class="form-error hidden" id="login-email-error"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="login-password">password</label>
+          <input class="form-input" type="password" id="login-password" name="password"
+            placeholder="enter your password" required>
+          <div class="form-error hidden" id="login-password-error"></div>
+        </div>
+
+        <button class="btn btn-primary btn-full" type="submit" id="login-submit">log in</button>
+      </form>
+
+      <p class="auth-link">
+        don't have an account?
+        <a href="register.html">register here</a>
+      </p>
+    </section>
+  </main>
+
+  <script src="js/storage.js"></script>
+  <script src="js/validation.js"></script>
+  <script src="js/auth.js"></script>
 </body>
+
 </html>

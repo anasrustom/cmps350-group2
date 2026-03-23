@@ -1,14 +1,129 @@
 <!DOCTYPE html>
-<html lang=""en"">
+<html>
+
 <head>
-  <meta charset=""UTF-8"">
-  <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
   <title>post</title>
-  <link rel=""stylesheet"" href=""css/base.css"">
-  <link rel=""stylesheet"" href=""css/components.css"">
-  <link rel=""stylesheet"" href=""css/responsive.css"">
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/responsive.css">
 </head>
+
 <body>
-  <script src=""js/app.js"" defer></script>
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <a href="index.html">campus feed</a>
+      </div>
+
+      <nav>
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a href="index.html">home</a>
+          </li>
+          <li class="nav-item">
+            <a href="profile.html">profile</a>
+          </li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-user">
+        <div class="avatar avatar-sm" id="sidebar-avatar"></div>
+        <div>
+          <div class="sidebar-user-name" id="sidebar-user-name">current user</div>
+          <div class="sidebar-user-handle" id="sidebar-user-handle">@currentuser</div>
+        </div>
+      </div>
+
+      <button class="btn btn-secondary btn-full" type="button" id="logout-btn">log out</button>
+    </aside>
+
+    <main class="feed-column">
+      <header class="page-header">
+        <h2>post</h2>
+      </header>
+
+      <div class="alert alert-success hidden" id="post-message"></div>
+
+      <section>
+        <header class="page-header">
+          <h2>post details</h2>
+        </header>
+
+        <article class="post-card" id="post-detail">
+          <div class="post-card-inner">
+            <div class="avatar avatar-md" id="post-author-avatar"></div>
+
+            <div class="post-body">
+              <div class="post-meta">
+                <a class="post-author" href="profile.html" id="post-author-name">user name</a>
+                <span class="post-username" id="post-author-handle">@username</span>
+                <span class="post-time" id="post-time">just now</span>
+              </div>
+
+              <p class="post-text" id="post-content">post content will appear here</p>
+
+              <div class="post-actions">
+                <button class="action-btn" type="button" id="like-post-btn">like</button>
+                <span class="post-time" id="post-like-count">0 likes</span>
+                <button class="action-btn hidden" type="button" id="delete-post-btn">delete</button>
+              </div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="composer">
+        <header>
+          <h3>add comment</h3>
+        </header>
+
+        <form id="comment-form">
+          <div class="form-group">
+            <label class="form-label" for="comment-text">comment</label>
+            <textarea class="form-textarea" id="comment-text" name="comment" placeholder="write a comment"
+              required></textarea>
+            <div class="form-error hidden" id="comment-error"></div>
+          </div>
+
+          <div class="composer-footer">
+            <button class="btn btn-primary" type="submit" id="comment-submit">comment</button>
+          </div>
+        </form>
+      </section>
+
+      <section>
+        <header class="page-header">
+          <h2>comments</h2>
+        </header>
+
+        <div class="comments-section" id="comments-list">
+          <div class="empty-state" id="comments-empty-state">
+            <p>no comments yet</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <aside class="right-panel">
+      <section class="who-to-follow">
+        <h3>who to follow</h3>
+
+        <div class="follow-list" id="suggestions-list">
+          <div class="empty-state">
+            <p>suggestions will appear here</p>
+          </div>
+        </div>
+      </section>
+    </aside>
+  </div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/follow.js"></script>
+  <script src="js/posts.js"></script>
+  <script src="js/comments.js"></script>
+  <script src="js/post-detail.js"></script>
 </body>
+
 </html>

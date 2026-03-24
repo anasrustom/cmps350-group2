@@ -23,7 +23,7 @@
 .sidebar-logo {
     font-size: 1.5rem;
     font-weight: bold;
-    color: #22c55e;
+    color: #8D1B3D;
     padding: 0.5rem 0;
 }
 
@@ -46,13 +46,13 @@
 }
 
 .nav-item a:hover {
-    background-color: #dcfce7;
-    color: #16a34a;
+    background-color: #F9E8ED;
+    color: #6B1530;
 }
 
 .nav-item.active a {
-    background-color: #dcfce7;
-    color: #16a34a;
+    background-color: #F9E8ED;
+    color: #6B1530;
     font-weight: bold;
 }
 
@@ -66,7 +66,7 @@
 }
 
 .sidebar-user:hover {
-    background-color: #dcfce7;
+    background-color: #F9E8ED;
 }
 
 .sidebar-user-name {
@@ -124,24 +124,24 @@
 }
 
 .btn-primary {
-    background-color: #22c55e;
+    background-color: #8D1B3D;
     color: #ffffff;
-    border: 1px solid #22c55e;
+    border: 1px solid #8D1B3D;
 }
 
 .btn-primary:hover {
-    background-color: #16a34a;
-    border: 1px solid #16a34a;
+    background-color: #6B1530;
+    border: 1px solid #6B1530;
 }
 
 .btn-secondary {
     background-color: #ffffff;
-    color: #22c55e;
-    border: 1px solid #22c55e;
+    color: #8D1B3D;
+    border: 1px solid #8D1B3D;
 }
 
 .btn-secondary:hover {
-    background-color: #dcfce7;
+    background-color: #F9E8ED;
 }
 
 .btn-danger {
@@ -172,7 +172,7 @@
 
 /* avatars */
 .avatar {
-    background-color: #dcfce7;
+    background-color: #F9E8ED;
     border: 2px solid #d1d5db;
     border-radius: 999px;
 }
@@ -245,7 +245,7 @@
 }
 
 .form-input:focus {
-    border-color: #22c55e;
+    border-color: #8D1B3D;
 }
 
 .form-input.error {
@@ -264,7 +264,7 @@
 }
 
 .form-textarea:focus {
-    border-color: #22c55e;
+    border-color: #8D1B3D;
 }
 
 .form-error {
@@ -385,8 +385,8 @@
 }
 
 .action-btn:hover {
-    color: #16a34a;
-    background-color: #dcfce7;
+    color: #6B1530;
+    background-color: #F9E8ED;
 }
 
 .action-btn.liked {
@@ -447,7 +447,7 @@
 
 .profile-cover {
     height: 160px;
-    background-color: #dcfce7;
+    background-color: #8D1B3D;
 }
 
 .profile-avatar-wrap {
@@ -570,9 +570,9 @@
 }
 
 .alert-success {
-    background-color: #dcfce7;
-    color: #16a34a;
-    border: 1px solid #bbf7d0;
+    background-color: #F9E8ED;
+    color: #6B1530;
+    border: 1px solid #F0C2CF;
 }
 
 /* divider */

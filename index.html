@@ -2,9 +2,10 @@
 <html>
 
 <head>
-  <title>home</title>
+  <title>QatarConnect | Home</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="images/favicon.ico">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/responsive.css">
@@ -14,16 +15,16 @@
   <div class="app-layout">
     <aside class="sidebar">
       <div class="sidebar-logo">
-        <a href="index.html">Qatar Connect</a>
+        <a href="index.html"><img src="images/QatarConnect-Logo.png" alt="QatarConnect"></a>
       </div>
 
       <nav>
         <ul class="nav-list">
           <li class="nav-item active">
-            <a href="index.html">home</a>
+            <a href="index.html">Home</a>
           </li>
           <li class="nav-item">
-            <a href="profile.html">profile</a>
+            <a href="profile.html">Profile</a>
           </li>
         </ul>
       </nav>
@@ -36,12 +37,12 @@
         </div>
       </div>
 
-      <button class="btn btn-secondary btn-full" type="button" id="logout-btn">log out</button>
+      <button class="btn btn-secondary btn-full" type="button" id="logout-btn">Log Out</button>
     </aside>
 
     <main class="feed-column">
       <header class="page-header">
-        <h2>home</h2>
+        <h2>Home</h2>
       </header>
 
       <div class="alert alert-success hidden" id="feed-message"></div>
@@ -52,12 +53,12 @@
             <img class="avatar avatar-md" id="composer-avatar" src="https://via.placeholder.com/48" alt="your avatar">
 
             <div class="composer-content">
-              <label class="form-label" for="composer-text">what's on your mind?</label>
-              <textarea class="form-textarea" id="composer-text" name="content" placeholder="write a post"></textarea>
+              <label class="form-label" for="composer-text">What's on your mind?</label>
+              <textarea class="form-textarea" id="composer-text" name="content" placeholder="Write a post"></textarea>
 
               <div class="composer-footer">
                 <span class="char-count" id="composer-count">0</span>
-                <button class="btn btn-primary" type="submit" id="composer-submit">post</button>
+                <button class="btn btn-primary" type="submit" id="composer-submit">Post</button>
               </div>
             </div>
           </div>
@@ -66,12 +67,17 @@
 
       <section>
         <header class="page-header">
-          <h2>feed</h2>
+          <h2>Feed</h2>
         </header>
+
+        <div class="feed-tabs">
+          <button class="feed-tab active" type="button" data-tab="following">Your Following</button>
+          <button class="feed-tab" type="button" data-tab="discovery">Discovery</button>
+        </div>
 
         <div id="feed-list">
           <div class="empty-state" id="feed-empty-state">
-            <p>no posts to show yet</p>
+            <p>Follow someone to see their posts here</p>
           </div>
         </div>
       </section>
@@ -79,11 +85,11 @@
 
     <aside class="right-panel">
       <section class="who-to-follow">
-        <h3>who to follow</h3>
+        <h3>Who to Follow</h3>
 
         <div class="follow-list" id="suggestions-list">
           <div class="empty-state">
-            <p>suggestions will appear here</p>
+            <p>Suggestions will appear here</p>
           </div>
         </div>
       </section>

@@ -1,0 +1,5 @@
+git push origin main
+>>EOF
+haforis
+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
+EOF

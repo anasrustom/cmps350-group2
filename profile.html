@@ -2,9 +2,10 @@
 <html>
 
 <head>
-  <title>profile</title>
+  <title>QatarConnect | Profile</title>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" href="images/favicon.ico">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/responsive.css">
@@ -14,16 +15,16 @@
   <div class="app-layout">
     <aside class="sidebar">
       <div class="sidebar-logo">
-        <a href="index.html">Qatar Connect</a>
+        <a href="index.html"><img src="images/QatarConnect-Logo.png" alt="QatarConnect"></a>
       </div>
 
       <nav>
         <ul class="nav-list">
           <li class="nav-item">
-            <a href="index.html">home</a>
+            <a href="index.html">Home</a>
           </li>
           <li class="nav-item active">
-            <a href="profile.html">profile</a>
+            <a href="profile.html">Profile</a>
           </li>
         </ul>
       </nav>
@@ -36,12 +37,12 @@
         </div>
       </div>
 
-      <button class="btn btn-secondary btn-full" type="button" id="logout-btn">log out</button>
+      <button class="btn btn-secondary btn-full" type="button" id="logout-btn">Log Out</button>
     </aside>
 
     <main class="feed-column">
       <header class="page-header">
-        <h2>profile</h2>
+        <h2>Profile</h2>
       </header>
 
       <section class="profile-header">
@@ -75,8 +76,8 @@
         </div>
 
         <div class="profile-actions">
-          <button class="btn btn-primary hidden" type="button" id="edit-profile-btn">edit profile</button>
-          <button class="btn btn-secondary hidden" type="button" id="follow-user-btn">follow</button>
+          <button class="btn btn-primary hidden" type="button" id="edit-profile-btn">Edit Profile</button>
+          <button class="btn btn-secondary hidden" type="button" id="follow-user-btn">Follow</button>
         </div>
       </section>
 
@@ -84,39 +85,39 @@
 
       <section class="post-card hidden" id="profile-edit-section">
         <header>
-          <h3>edit profile</h3>
+          <h3>Edit Profile</h3>
         </header>
 
         <form id="profile-edit-form">
           <div class="form-group">
-            <label class="form-label" for="profile-avatar-input">avatar url</label>
+            <label class="form-label" for="profile-avatar-input">Avatar URL</label>
             <input class="form-input" type="url" id="profile-avatar-input" name="avatar"
               placeholder="https://example.com/avatar.jpg">
             <div class="form-error hidden" id="profile-avatar-error"></div>
           </div>
 
           <div class="form-group">
-            <label class="form-label" for="profile-bio-input">bio</label>
+            <label class="form-label" for="profile-bio-input">Bio</label>
             <textarea class="form-textarea" id="profile-bio-input" name="bio"
               placeholder="write a short bio"></textarea>
             <div class="form-error hidden" id="profile-bio-error"></div>
           </div>
 
           <div class="profile-actions">
-            <button class="btn btn-primary" type="submit" id="profile-save-btn">save changes</button>
-            <button class="btn btn-ghost" type="button" id="profile-cancel-btn">cancel</button>
+            <button class="btn btn-primary" type="submit" id="profile-save-btn">Save Changes</button>
+            <button class="btn btn-ghost" type="button" id="profile-cancel-btn">Cancel</button>
           </div>
         </form>
       </section>
 
       <section>
         <header class="page-header">
-          <h2>posts</h2>
+          <h2>Posts</h2>
         </header>
 
         <div id="profile-posts-list">
           <div class="empty-state" id="profile-empty-state">
-            <p>no posts yet</p>
+            <p>No posts yet</p>
           </div>
         </div>
       </section>
@@ -124,11 +125,11 @@
 
     <aside class="right-panel">
       <section class="who-to-follow">
-        <h3>who to follow</h3>
+        <h3>Who to Follow</h3>
 
         <div class="follow-list" id="suggestions-list">
           <div class="empty-state">
-            <p>suggestions will appear here</p>
+            <p>Suggestions will appear here</p>
           </div>
         </div>
       </section>
@@ -138,6 +139,7 @@
   <script src="js/storage.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/follow.js"></script>
+  <script src="js/posts.js"></script>
   <script src="js/profile.js"></script>
 </body>
 

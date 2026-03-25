@@ -12,8 +12,16 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   renderProfile(profileUser, currentUser, users);
-  renderPosts(profileUser);
+  renderProfilePosts(profileUser, currentUser);
   wireEditForm(profileUser, currentUser, users);
+
+  // delegated click handler for post actions on the profile page
+  const postsContainer = document.getElementById('profile-posts-list');
+  if (postsContainer) {
+    postsContainer.addEventListener('click', function (event) {
+      handleProfilePostClick(event, profileUser, currentUser);
+    });
+  }
 });
 
 function getProfileUserId(fallbackId) {
@@ -53,6 +61,88 @@ function renderProfile(profileUser, currentUser, users) {
   } else {
     editBtn.classList.add('hidden');
     followBtn.classList.remove('hidden');
+  }
+}
+
+function renderProfilePosts(profileUser, currentUser) {
+  const posts = JSON.parse(localStorage.getItem(STORAGE_KEYS.POSTS) || '[]');
+  const userPosts = posts.filter(function (p) { return p.authorId === profileUser.id; });
+  const container = document.getElementById('profile-posts-list');
+  const emptyState = document.getElementById('profile-empty-state');
+
+  userPosts.sort(function (a, b) {
+    return new Date(b.timestamp) - new Date(a.timestamp);
+  });
+
+  if (userPosts.length === 0) {
+    container.innerHTML = '';
+    emptyState.classList.remove('hidden');
+    container.appendChild(emptyState);
+    return;
+  }
+
+  emptyState.classList.add('hidden');
+
+  // createPostCardHtml and getAuthorById are global functions from posts.js
+  let html = '';
+  for (let i = 0; i < userPosts.length; i++) {
+    html += createPostCardHtml(userPosts[i], profileUser, currentUser);
+  }
+  container.innerHTML = html;
+}
+
+function handleProfilePostClick(event, profileUser, currentUser) {
+  const btn = event.target.closest('button[data-action]');
+  if (!btn) return;
+
+  const card = btn.closest('[data-post-id]');
+  if (!card) return;
+
+  const postId = parseInt(card.getAttribute('data-post-id'), 10);
+  if (!postId) return;
+
+  const action = btn.getAttribute('data-action');
+
+  if (action === 'view') {
+    window.location.href = 'post.html?postId=' + postId;
+    return;
+  }
+
+  if (action === 'like') {
+    if (!currentUser) return;
+    updatePostById(postId, function (post) {
+      const likes = post.likes || [];
+      const idx = likes.indexOf(currentUser.id);
+      if (idx === -1) likes.push(currentUser.id);
+      else likes.splice(idx, 1);
+      post.likes = likes;
+      return post;
+    });
+    renderProfilePosts(profileUser, currentUser);
+    return;
+  }
+
+  if (action === 'delete') {
+    if (!currentUser) return;
+    const post = getPostById(postId);
+    if (!post || post.authorId !== currentUser.id) return;
+
+    removePostById(postId);
+
+    // keep post count stat in sync
+    const postCountEl = document.getElementById('profile-post-count');
+    if (postCountEl) {
+      const count = parseInt(postCountEl.textContent, 10);
+      if (!isNaN(count)) postCountEl.textContent = count - 1;
+    }
+
+    renderProfilePosts(profileUser, currentUser);
+
+    const msgEl = document.getElementById('profile-message');
+    if (msgEl) {
+      msgEl.textContent = 'post deleted';
+      msgEl.classList.remove('hidden');
+    }
   }
 }
 
@@ -106,38 +196,5 @@ function wireEditForm(profileUser, currentUser, users) {
 
     messageEl.textContent = 'profile updated';
     messageEl.classList.remove('hidden');
-  });
-}
-
-function renderPosts(profileUser) {
-  const posts = JSON.parse(localStorage.getItem(STORAGE_KEYS.POSTS) || '[]');
-  const userPosts = posts.filter(function (p) { return p.authorId === profileUser.id; });
-  const container = document.getElementById('profile-posts-list');
-  const emptyState = document.getElementById('profile-empty-state');
-
-  if (userPosts.length === 0) {
-    emptyState.classList.remove('hidden');
-    return;
-  }
-
-  emptyState.classList.add('hidden');
-
-  userPosts.sort(function (a, b) {
-    return new Date(b.timestamp) - new Date(a.timestamp);
-  });
-
-  userPosts.forEach(function (post) {
-    const date = new Date(post.timestamp).toLocaleDateString();
-    const card = document.createElement('article');
-    card.className = 'post-card';
-    card.innerHTML =
-      '<div class="post-body">' +
-        '<div class="post-meta">' +
-          '<span class="post-author">' + profileUser.username + '</span>' +
-          '<span class="post-time">' + date + '</span>' +
-        '</div>' +
-        '<p class="post-text">' + post.content + '</p>' +
-      '</div>';
-    container.appendChild(card);
   });
 }

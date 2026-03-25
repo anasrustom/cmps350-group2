@@ -4,6 +4,18 @@ const STORAGE_KEYS = {
   SESSION: 'x_session'
 };
 
+function getUsers() {
+  return JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '[]');
+}
+
+function saveUsers(users) {
+  localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+}
+
+function generateId() {
+  return Date.now();
+}
+
 const STORAGE_SCHEMA = {
   x_users: [
     {

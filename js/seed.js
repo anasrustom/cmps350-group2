@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function () {
     {
       id: 101,
       authorId: 1,
-      content: 'just finished my first html project. feels great!',
+      content: 'Dr. Fadi is a very kind man, God bless him. ',
       timestamp: '2025-01-15T10:00:00.000Z',
       likes: [2],
       comments: []
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function () {
     {
       id: 103,
       authorId: 3,
-      content: 'anyone else love how flexbox handles alignment?',
+      content: 'I am very scared from the Web Dev midterm',
       timestamp: '2025-01-17T14:00:00.000Z',
       likes: [],
       comments: []
@@ -66,3 +66,11 @@ document.addEventListener('DOMContentLoaded', function () {
   localStorage.setItem('x_posts', JSON.stringify(posts));
   localStorage.setItem('x_session', JSON.stringify({ currentUserId: null }));
 });
+
+// dev helper — call resetSeedData() in the browser console to reset demo state
+function resetSeedData() {
+  localStorage.removeItem('x_users');
+  localStorage.removeItem('x_posts');
+  localStorage.removeItem('x_session');
+  window.location.reload();
+}

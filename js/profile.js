@@ -149,6 +149,9 @@ function handleProfilePostClick(event, profileUser, currentUser) {
     const post = getPostById(postId);
     if (!post || post.authorId !== currentUser.id) return;
 
+    const ok = confirm('Delete this post?');
+    if (!ok) return;
+
     removePostById(postId);
 
     const likesCountEl = document.getElementById('profile-likes-count');

@@ -249,6 +249,9 @@ function handleFeedClick(event) {
 		const post = getPostById(postId);
 		if (!post || post.authorId !== currentUser.id) return;
 
+		const ok = confirm('Delete this post?');
+		if (!ok) return;
+
 		removePostById(postId);
 		renderFeedPosts();
 		setFeedMessage('post deleted');

@@ -135,6 +135,9 @@ function initPostDetailPage() {
 			const latestPost = window.Member3Posts.getPostById(postId);
 			if (!latestPost || latestPost.authorId !== currentUser.id) return;
 
+			const ok = confirm('Delete this post?');
+			if (!ok) return;
+
 			window.Member3Posts.removePostById(postId);
 			setPostMessage('post deleted');
 			window.location.href = 'index.html';

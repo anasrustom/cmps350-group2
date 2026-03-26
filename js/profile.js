@@ -41,7 +41,7 @@ function getLikesReceivedCount(userId) {
 
   for (let i = 0; i < posts.length; i++) {
     if (posts[i].authorId === userId) {
-      totalLikes += posts[i].likes.length;
+      totalLikes += (posts[i].likes || []).length;
     }
   }
 

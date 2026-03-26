@@ -92,6 +92,16 @@ function renderProfilePosts(profileUser, currentUser) {
 
   if (userPosts.length === 0) {
     container.innerHTML = '';
+
+    const p = emptyState.querySelector('p');
+    if (p) {
+      if (profileUser.id === currentUser.id) {
+        p.textContent = "You haven't posted yet.";
+      } else {
+        p.textContent = 'This user has not posted yet.';
+      }
+    }
+
     emptyState.classList.remove('hidden');
     container.appendChild(emptyState);
     return;

@@ -100,23 +100,23 @@ function createPostCardHtml(post, author, currentUser) {
 
 	return '' +
 		'<article class="post-card" data-post-id="' + post.id + '">' +
-			'<div class="post-card-inner">' +
-				'<img class="avatar avatar-md" src="' + safeAvatar + '" alt="author avatar">' +
-				'<div class="post-body">' +
-					'<div class="post-meta">' +
-						'<a class="post-author" href="profile.html?userId=' + post.authorId + '">' + escapeHtml(username) + '</a>' +
-						'<span class="post-username">@' + escapeHtml(username) + '</span>' +
-						'<span class="post-time">' + escapeHtml(formatPostTime(post.timestamp)) + '</span>' +
-					'</div>' +
-					'<p class="post-text">' + escapeHtml(post.content) + '</p>' +
-					'<div class="post-actions">' +
-						'<button class="action-btn' + (isLiked ? ' liked' : '') + '" type="button" data-action="like">' + (isLiked ? 'liked' : 'like') + '</button>' +
-						'<span class="post-time">' + likeCount + ' likes</span>' +
-						'<button class="action-btn" type="button" data-action="view">view</button>' +
-						(canDelete ? '<button class="action-btn" type="button" data-action="delete">delete</button>' : '') +
-					'</div>' +
-				'</div>' +
-			'</div>' +
+		'<div class="post-card-inner">' +
+		'<img class="avatar avatar-md" src="' + safeAvatar + '" alt="author avatar">' +
+		'<div class="post-body">' +
+		'<div class="post-meta">' +
+		'<a class="post-author" href="profile.html?userId=' + post.authorId + '">' + escapeHtml(username) + '</a>' +
+		'<span class="post-username">@' + escapeHtml(username) + '</span>' +
+		'<span class="post-time">' + escapeHtml(formatPostTime(post.timestamp)) + '</span>' +
+		'</div>' +
+		'<p class="post-text">' + escapeHtml(post.content) + '</p>' +
+		'<div class="post-actions">' +
+		'<button class="action-btn' + (isLiked ? ' liked' : '') + '" type="button" data-action="like">' + (isLiked ? 'liked' : 'like') + '</button>' +
+		'<span class="post-time">' + likeCount + ' likes</span>' +
+		'<button class="action-btn" type="button" data-action="view">view</button>' +
+		(canDelete ? '<button class="action-btn" type="button" data-action="delete">delete</button>' : '') +
+		'</div>' +
+		'</div>' +
+		'</div>' +
 		'</article>';
 }
 
@@ -153,6 +153,16 @@ function renderFeedPosts() {
 	feedList.innerHTML = html;
 }
 
+function getDraftKey() {
+	const currentUser = getCurrentUser();
+
+	if (currentUser) {
+		return 'postDraft_' + currentUser.id;
+	}
+
+	return 'postDraft_guest';
+}
+
 function handleComposerSubmit(event) {
 	event.preventDefault();
 
@@ -183,6 +193,7 @@ function handleComposerSubmit(event) {
 
 	posts.unshift(post);
 	savePostsList(posts);
+	localStorage.removeItem(getDraftKey());
 
 	composerText.value = '';
 	const composerCount = document.getElementById('composer-count');
@@ -254,10 +265,23 @@ function initFeedPage() {
 
 	composerForm.addEventListener('submit', handleComposerSubmit);
 
+	const draftKey = getDraftKey();
+	const savedDraft = localStorage.getItem(draftKey);
+
+	if (savedDraft) {
+		composerText.value = savedDraft;
+
+		if (composerCount) {
+			composerCount.textContent = savedDraft.length;
+		}
+	}
+
 	composerText.addEventListener('input', function () {
 		if (composerCount) {
-			composerCount.textContent = String(composerText.value.length);
+			composerCount.textContent = composerText.value.length;
 		}
+
+		localStorage.setItem(draftKey, composerText.value);
 	});
 
 	feedList.addEventListener('click', handleFeedClick);

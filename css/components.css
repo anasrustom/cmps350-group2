@@ -450,12 +450,14 @@
 }
 
 .follow-name {
+    display: block;
     font-size: 0.9rem;
     font-weight: bold;
     color: #222222;
 }
 
 .follow-handle {
+    display: block;
     font-size: 0.8rem;
     color: #6b7280;
 }

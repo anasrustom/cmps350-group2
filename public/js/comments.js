@@ -23,14 +23,14 @@ function createCommentHtml(comment, user) {
 
 	return '' +
 		'<article class="comment-card">' +
-			'<img class="avatar avatar-sm" src="' + safeAvatar + '" alt="comment author avatar">' +
-			'<div class="comment-body">' +
-				'<div class="comment-meta">' +
-					'<a class="post-author" href="profile.html?userId=' + comment.userId + '">' + safeUsername + '</a>' +
-					'<span class="post-time">' + safeTimeText + '</span>' +
-				'</div>' +
-				'<p class="post-text">' + safeText + '</p>' +
-			'</div>' +
+		'<img class="avatar avatar-sm" src="' + safeAvatar + '" alt="comment author avatar">' +
+		'<div class="comment-body">' +
+		'<div class="comment-meta">' +
+		'<a class="post-author" href="profile.html?userId=' + comment.userId + '">' + safeUsername + '</a>' +
+		'<span class="post-time">' + safeTimeText + '</span>' +
+		'</div>' +
+		'<p class="post-text">' + safeText + '</p>' +
+		'</div>' +
 		'</article>';
 }
 
@@ -47,6 +47,11 @@ function renderCommentsForPost(postId) {
 	if (!post || !post.comments || post.comments.length === 0) {
 		container.innerHTML = '';
 		if (emptyState) {
+			const p = emptyState.querySelector('p');
+			if (p) {
+				p.textContent = 'No comments yet. Be the first to comment.';
+			}
+
 			emptyState.classList.remove('hidden');
 			container.appendChild(emptyState);
 		}

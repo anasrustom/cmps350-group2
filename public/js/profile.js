@@ -35,6 +35,19 @@ function getProfileUserId(fallbackId) {
   return fallbackId;
 }
 
+function getLikesReceivedCount(userId) {
+  const posts = JSON.parse(localStorage.getItem(STORAGE_KEYS.POSTS) || '[]');
+  let totalLikes = 0;
+
+  for (let i = 0; i < posts.length; i++) {
+    if (posts[i].authorId === userId) {
+      totalLikes += (posts[i].likes || []).length;
+    }
+  }
+
+  return totalLikes;
+}
+
 function renderProfile(profileUser, currentUser, users) {
   const posts = JSON.parse(localStorage.getItem(STORAGE_KEYS.POSTS) || '[]');
   const userPosts = posts.filter(function (p) { return p.authorId === profileUser.id; });
@@ -43,6 +56,8 @@ function renderProfile(profileUser, currentUser, users) {
     return u.following.indexOf(profileUser.id) !== -1;
   }).length;
 
+  const likesReceivedCount = getLikesReceivedCount(profileUser.id);
+
   document.getElementById('profile-avatar').src = profileUser.avatar || DEFAULT_AVATAR;
   document.getElementById('profile-name').textContent = profileUser.username;
   document.getElementById('profile-handle').textContent = '@' + profileUser.username;
@@ -50,6 +65,7 @@ function renderProfile(profileUser, currentUser, users) {
   document.getElementById('profile-post-count').textContent = userPosts.length;
   document.getElementById('profile-following-count').textContent = profileUser.following.length;
   document.getElementById('profile-follower-count').textContent = followerCount;
+  document.getElementById('profile-likes-count').textContent = likesReceivedCount;
 
   const isOwnProfile = profileUser.id === currentUser.id;
   const editBtn = document.getElementById('edit-profile-btn');
@@ -76,6 +92,16 @@ function renderProfilePosts(profileUser, currentUser) {
 
   if (userPosts.length === 0) {
     container.innerHTML = '';
+
+    const p = emptyState.querySelector('p');
+    if (p) {
+      if (profileUser.id === currentUser.id) {
+        p.textContent = "You haven't posted yet.";
+      } else {
+        p.textContent = 'This user has not posted yet.';
+      }
+    }
+
     emptyState.classList.remove('hidden');
     container.appendChild(emptyState);
     return;
@@ -118,6 +144,12 @@ function handleProfilePostClick(event, profileUser, currentUser) {
       post.likes = likes;
       return post;
     });
+
+    const likesCountEl = document.getElementById('profile-likes-count');
+    if (likesCountEl) {
+      likesCountEl.textContent = getLikesReceivedCount(profileUser.id);
+    }
+
     renderProfilePosts(profileUser, currentUser);
     return;
   }
@@ -127,9 +159,16 @@ function handleProfilePostClick(event, profileUser, currentUser) {
     const post = getPostById(postId);
     if (!post || post.authorId !== currentUser.id) return;
 
+    const ok = confirm('Delete this post?');
+    if (!ok) return;
+
     removePostById(postId);
 
-    // keep post count stat in sync
+    const likesCountEl = document.getElementById('profile-likes-count');
+    if (likesCountEl) {
+      likesCountEl.textContent = getLikesReceivedCount(profileUser.id);
+    }
+
     const postCountEl = document.getElementById('profile-post-count');
     if (postCountEl) {
       const count = parseInt(postCountEl.textContent, 10);

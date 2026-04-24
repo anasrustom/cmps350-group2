@@ -1,0 +1,92 @@
+[
+  {
+    "id": 1,
+    "authorId": 1,
+    "content": "Just got back from the National Museum of Qatar — absolutely stunning architecture. Highly recommend!",
+    "createdAt": "2025-01-15T10:00:00.000Z"
+  },
+  {
+    "id": 2,
+    "authorId": 2,
+    "content": "Working on a new branding project for a local startup. Can't wait to share the final result!",
+    "createdAt": "2025-01-20T14:30:00.000Z"
+  },
+  {
+    "id": 3,
+    "authorId": 3,
+    "content": "Qatar's economy continues to diversify. The new tech sector initiatives are really promising for graduates.",
+    "createdAt": "2025-02-01T09:15:00.000Z"
+  },
+  {
+    "id": 4,
+    "authorId": 4,
+    "content": "Found the most beautiful hidden beach near Al Wakrah. Crystal clear water and almost no one there!",
+    "createdAt": "2025-02-10T16:00:00.000Z"
+  },
+  {
+    "id": 5,
+    "authorId": 5,
+    "content": "Tried Damasca One last night — the lamb ouzi is unbelievable. Definitely top 3 in Doha.",
+    "createdAt": "2025-02-14T20:00:00.000Z"
+  },
+  {
+    "id": 6,
+    "authorId": 6,
+    "content": "Reminder: free health screenings at the West Bay clinic this Saturday 9am–1pm. Spread the word!",
+    "createdAt": "2025-02-20T08:00:00.000Z"
+  },
+  {
+    "id": 7,
+    "authorId": 1,
+    "content": "Desert camping last weekend was incredible. Stars like you've never seen in the city. 10/10 would go again.",
+    "createdAt": "2025-02-25T11:00:00.000Z"
+  },
+  {
+    "id": 8,
+    "authorId": 7,
+    "content": "Launched my new app today! It connects local tutors with students across Qatar. Check it out!",
+    "createdAt": "2025-03-01T12:00:00.000Z"
+  },
+  {
+    "id": 9,
+    "authorId": 3,
+    "content": "Great turnout at today's university debate on climate policy. The future of Qatar's environment is in good hands.",
+    "createdAt": "2025-03-05T18:00:00.000Z"
+  },
+  {
+    "id": 10,
+    "authorId": 2,
+    "content": "My latest design work just got featured in a regional creative magazine. So grateful for this community!",
+    "createdAt": "2025-03-10T09:30:00.000Z"
+  },
+  {
+    "id": 11,
+    "authorId": 5,
+    "content": "The new Korean BBQ spot in Lusail is worth every riyal. Pro tip: go on weekdays to avoid the wait.",
+    "createdAt": "2025-03-15T19:00:00.000Z"
+  },
+  {
+    "id": 12,
+    "authorId": 4,
+    "content": "Sunrise at the Inland Sea (Khor Al Adaid) — no filter needed. Qatar's landscapes never disappoint.",
+    "createdAt": "2025-03-20T06:00:00.000Z"
+  },
+  {
+    "id": 13,
+    "authorId": 6,
+    "content": "PSA: stay hydrated as temperatures rise! Keep water with you and check on elderly neighbours.",
+    "createdAt": "2025-04-01T08:30:00.000Z"
+  },
+  {
+    "id": 14,
+    "authorId": 7,
+    "content": "500 users signed up in the first month! Thank you Qatar for the incredible support on this journey.",
+    "createdAt": "2025-04-10T14:00:00.000Z"
+  },
+  {
+    "id": 15,
+    "authorId": 1,
+    "content": "Qatar Tech Festival next week — who's going? Would love to meet some of you in person!",
+    "createdAt": "2025-04-18T10:00:00.000Z"
+  }
+]

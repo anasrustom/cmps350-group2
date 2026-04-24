@@ -1,0 +1,17 @@
+[
+  { "followerId": 2, "followingId": 1, "createdAt": "2025-01-16T08:00:00.000Z" },
+  { "followerId": 3, "followingId": 1, "createdAt": "2025-01-17T08:00:00.000Z" },
+  { "followerId": 4, "followingId": 1, "createdAt": "2025-01-18T08:00:00.000Z" },
+  { "followerId": 1, "followingId": 2, "createdAt": "2025-01-22T08:00:00.000Z" },
+  { "followerId": 5, "followingId": 2, "createdAt": "2025-01-23T08:00:00.000Z" },
+  { "followerId": 1, "followingId": 3, "createdAt": "2025-02-03T08:00:00.000Z" },
+  { "followerId": 6, "followingId": 3, "createdAt": "2025-02-04T08:00:00.000Z" },
+  { "followerId": 2, "followingId": 4, "createdAt": "2025-02-12T08:00:00.000Z" },
+  { "followerId": 7, "followingId": 4, "createdAt": "2025-02-13T08:00:00.000Z" },
+  { "followerId": 3, "followingId": 5, "createdAt": "2025-02-16T08:00:00.000Z" },
+  { "followerId": 4, "followingId": 6, "createdAt": "2025-02-22T08:00:00.000Z" },
+  { "followerId": 1, "followingId": 7, "createdAt": "2025-03-02T08:00:00.000Z" },
+  { "followerId": 2, "followingId": 7, "createdAt": "2025-03-02T09:00:00.000Z" },
+  { "followerId": 5, "followingId": 7, "createdAt": "2025-03-03T08:00:00.000Z" },
+  { "followerId": 6, "followingId": 7, "createdAt": "2025-03-04T08:00:00.000Z" }
+]

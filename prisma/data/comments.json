@@ -1,0 +1,20 @@
+[
+  { "id": 1,  "postId": 1,  "userId": 2, "text": "I went last month — the ring building is incredible!", "createdAt": "2025-01-15T11:00:00.000Z" },
+  { "id": 2,  "postId": 1,  "userId": 4, "text": "Adding this to my list. Thanks for sharing!", "createdAt": "2025-01-15T12:30:00.000Z" },
+  { "id": 3,  "postId": 2,  "userId": 1, "text": "Can't wait to see it! Your work is always stunning.", "createdAt": "2025-01-21T09:00:00.000Z" },
+  { "id": 4,  "postId": 4,  "userId": 5, "text": "Secret beach?! Please drop the coordinates!", "createdAt": "2025-02-11T10:00:00.000Z" },
+  { "id": 5,  "postId": 4,  "userId": 3, "text": "Qatar's coastline is so underrated. Great find!", "createdAt": "2025-02-11T11:00:00.000Z" },
+  { "id": 6,  "postId": 5,  "userId": 6, "text": "I've been meaning to try that place. Now I have to go!", "createdAt": "2025-02-15T08:00:00.000Z" },
+  { "id": 7,  "postId": 6,  "userId": 1, "text": "Sharing this with my family. Very important reminder.", "createdAt": "2025-02-20T09:00:00.000Z" },
+  { "id": 8,  "postId": 6,  "userId": 7, "text": "Thank you for doing this Sara, community health matters!", "createdAt": "2025-02-20T10:00:00.000Z" },
+  { "id": 9,  "postId": 7,  "userId": 4, "text": "Agreed! The desert sky is something else entirely.", "createdAt": "2025-02-26T08:00:00.000Z" },
+  { "id": 10, "postId": 8,  "userId": 1, "text": "Congrats Yusuf! This is exactly what Qatar needs.", "createdAt": "2025-03-01T13:00:00.000Z" },
+  { "id": 11, "postId": 8,  "userId": 3, "text": "Signed up already! Great initiative.", "createdAt": "2025-03-01T14:00:00.000Z" },
+  { "id": 12, "postId": 8,  "userId": 2, "text": "Would love to collab on the UI sometime!", "createdAt": "2025-03-02T09:00:00.000Z" },
+  { "id": 13, "postId": 10, "userId": 5, "text": "Well deserved! Your designs are always on point.", "createdAt": "2025-03-10T10:30:00.000Z" },
+  { "id": 14, "postId": 12, "userId": 1, "text": "That photo is absolutely breathtaking!", "createdAt": "2025-03-20T07:00:00.000Z" },
+  { "id": 15, "postId": 12, "userId": 7, "text": "On my bucket list for this Eid. Thanks for the inspo!", "createdAt": "2025-03-20T08:30:00.000Z" },
+  { "id": 16, "postId": 14, "userId": 6, "text": "500 users already! Amazing milestone, keep going!", "createdAt": "2025-04-10T15:00:00.000Z" },
+  { "id": 17, "postId": 15, "userId": 2, "text": "I'm going! Let's try to meet up at the AI talks section.", "createdAt": "2025-04-18T11:00:00.000Z" },
+  { "id": 18, "postId": 15, "userId": 5, "text": "Registered yesterday. See you there!", "createdAt": "2025-04-18T12:00:00.000Z" }
+]

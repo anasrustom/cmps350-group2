@@ -5,5 +5,7 @@ node_modules/
 node_modules/
 .next/
 .env
+.next/
+node_modules/
 .env.local
 .env*.local

@@ -1,75 +1,74 @@
-document.addEventListener('DOMContentLoaded', function () {
-  const currentUser = getCurrentUser();
-  if (!currentUser) return;
+// profile.js — Member 2
+// Loads profile data and posts from the API instead of localStorage.
+// Post like/delete actions remain in Member 3's scope (posts.js localStorage).
 
-  const profileUserId = getProfileUserId(currentUser.id);
-  const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '[]');
-  const profileUser = users.find(function (u) { return u.id === profileUserId; });
+document.addEventListener('DOMContentLoaded', async function () {
+  var currentUser = getCurrentUser();
+  if (!currentUser) return; // page guard in auth.js handles redirect
 
-  if (!profileUser) {
-    document.querySelector('main').innerHTML = '<p style="padding:2rem">user not found</p>';
-    return;
-  }
+  var profileUserId = getProfileUserId(currentUser.id);
 
-  renderProfile(profileUser, currentUser, users);
-  renderProfilePosts(profileUser, currentUser);
-  wireEditForm(profileUser, currentUser, users);
+  try {
+    // Fetch profile stats and posts in parallel
+    var profileRes = await fetch('/api/users/' + profileUserId);
+    var profileData = await profileRes.json();
 
-  // delegated click handler for post actions on the profile page
-  const postsContainer = document.getElementById('profile-posts-list');
-  if (postsContainer) {
-    postsContainer.addEventListener('click', function (event) {
-      handleProfilePostClick(event, profileUser, currentUser);
-    });
+    if (!profileData.success) {
+      document.querySelector('main').innerHTML = '<p style="padding:2rem">user not found</p>';
+      return;
+    }
+
+    var profileUser = profileData.user;
+
+    var postsRes  = await fetch('/api/users/' + profileUserId + '/posts');
+    var postsData = await postsRes.json();
+    var userPosts = postsData.success ? postsData.posts : [];
+
+    renderProfile(profileUser, currentUser);
+    renderProfilePosts(profileUser, userPosts, currentUser);
+    wireEditForm(profileUser, currentUser);
+
+    // Delegated click handler for post like/delete on the profile page.
+    // Like and delete still go through posts.js (Member 3 localStorage) so
+    // those interactions are cross-member — counts may differ until Member 3
+    // converts their code to use the API.
+    var postsContainer = document.getElementById('profile-posts-list');
+    if (postsContainer) {
+      postsContainer.addEventListener('click', function (event) {
+        handleProfilePostClick(event, profileUser, currentUser, userPosts);
+      });
+    }
+  } catch (err) {
+    document.querySelector('main').innerHTML = '<p style="padding:2rem">failed to load profile</p>';
   }
 });
 
 function getProfileUserId(fallbackId) {
-  const search = window.location.search;
+  var search = window.location.search;
   if (!search) return fallbackId;
-  const pairs = search.slice(1).split('&');
-  for (let i = 0; i < pairs.length; i++) {
-    const parts = pairs[i].split('=');
+  var pairs = search.slice(1).split('&');
+  for (var i = 0; i < pairs.length; i++) {
+    var parts = pairs[i].split('=');
     if (parts[0] === 'userId') return parseInt(parts[1], 10);
   }
   return fallbackId;
 }
 
-function getLikesReceivedCount(userId) {
-  const posts = JSON.parse(localStorage.getItem(STORAGE_KEYS.POSTS) || '[]');
-  let totalLikes = 0;
+// ─── Render profile header stats ─────────────────────────────────────────────
 
-  for (let i = 0; i < posts.length; i++) {
-    if (posts[i].authorId === userId) {
-      totalLikes += (posts[i].likes || []).length;
-    }
-  }
-
-  return totalLikes;
-}
-
-function renderProfile(profileUser, currentUser, users) {
-  const posts = JSON.parse(localStorage.getItem(STORAGE_KEYS.POSTS) || '[]');
-  const userPosts = posts.filter(function (p) { return p.authorId === profileUser.id; });
-
-  const followerCount = users.filter(function (u) {
-    return u.following.indexOf(profileUser.id) !== -1;
-  }).length;
-
-  const likesReceivedCount = getLikesReceivedCount(profileUser.id);
-
+function renderProfile(profileUser, currentUser) {
   document.getElementById('profile-avatar').src = profileUser.avatar || DEFAULT_AVATAR;
-  document.getElementById('profile-name').textContent = profileUser.username;
-  document.getElementById('profile-handle').textContent = '@' + profileUser.username;
-  document.getElementById('profile-bio').textContent = profileUser.bio || '';
-  document.getElementById('profile-post-count').textContent = userPosts.length;
-  document.getElementById('profile-following-count').textContent = profileUser.following.length;
-  document.getElementById('profile-follower-count').textContent = followerCount;
-  document.getElementById('profile-likes-count').textContent = likesReceivedCount;
+  document.getElementById('profile-name').textContent    = profileUser.username;
+  document.getElementById('profile-handle').textContent  = '@' + profileUser.username;
+  document.getElementById('profile-bio').textContent     = profileUser.bio || '';
+  document.getElementById('profile-post-count').textContent      = profileUser.postsCount;
+  document.getElementById('profile-following-count').textContent = profileUser.followingCount;
+  document.getElementById('profile-follower-count').textContent  = profileUser.followersCount;
+  document.getElementById('profile-likes-count').textContent     = profileUser.likesCount;
 
-  const isOwnProfile = profileUser.id === currentUser.id;
-  const editBtn = document.getElementById('edit-profile-btn');
-  const followBtn = document.getElementById('follow-user-btn');
+  var isOwnProfile = profileUser.id === currentUser.id;
+  var editBtn      = document.getElementById('edit-profile-btn');
+  var followBtn    = document.getElementById('follow-user-btn');
 
   if (isOwnProfile) {
     editBtn.classList.remove('hidden');
@@ -80,28 +79,20 @@ function renderProfile(profileUser, currentUser, users) {
   }
 }
 
-function renderProfilePosts(profileUser, currentUser) {
-  const posts = JSON.parse(localStorage.getItem(STORAGE_KEYS.POSTS) || '[]');
-  const userPosts = posts.filter(function (p) { return p.authorId === profileUser.id; });
-  const container = document.getElementById('profile-posts-list');
-  const emptyState = document.getElementById('profile-empty-state');
+// ─── Render profile posts list ────────────────────────────────────────────────
 
-  userPosts.sort(function (a, b) {
-    return new Date(b.timestamp) - new Date(a.timestamp);
-  });
+function renderProfilePosts(profileUser, posts, currentUser) {
+  var container  = document.getElementById('profile-posts-list');
+  var emptyState = document.getElementById('profile-empty-state');
 
-  if (userPosts.length === 0) {
+  if (!posts || posts.length === 0) {
     container.innerHTML = '';
-
-    const p = emptyState.querySelector('p');
+    var p = emptyState.querySelector('p');
     if (p) {
-      if (profileUser.id === currentUser.id) {
-        p.textContent = "You haven't posted yet.";
-      } else {
-        p.textContent = 'This user has not posted yet.';
-      }
+      p.textContent = profileUser.id === currentUser.id
+        ? "You haven't posted yet."
+        : 'This user has not posted yet.';
     }
-
     emptyState.classList.remove('hidden');
     container.appendChild(emptyState);
     return;
@@ -109,25 +100,30 @@ function renderProfilePosts(profileUser, currentUser) {
 
   emptyState.classList.add('hidden');
 
-  // createPostCardHtml and getAuthorById are global functions from posts.js
-  let html = '';
-  for (let i = 0; i < userPosts.length; i++) {
-    html += createPostCardHtml(userPosts[i], profileUser, currentUser);
+  // createPostCardHtml is defined in posts.js (Member 3) — posts from API
+  // already carry `likes: [userId, ...]` and `timestamp` for compatibility.
+  var html = '';
+  for (var i = 0; i < posts.length; i++) {
+    html += createPostCardHtml(posts[i], profileUser, currentUser);
   }
   container.innerHTML = html;
 }
 
-function handleProfilePostClick(event, profileUser, currentUser) {
-  const btn = event.target.closest('button[data-action]');
+// ─── Post action delegation (like / delete / view) ───────────────────────────
+// Like and delete still call Member 3's localStorage helpers (updatePostById,
+// removePostById) from posts.js. TODO: update when Member 3 converts to API.
+
+function handleProfilePostClick(event, profileUser, currentUser, posts) {
+  var btn = event.target.closest('button[data-action]');
   if (!btn) return;
 
-  const card = btn.closest('[data-post-id]');
+  var card = btn.closest('[data-post-id]');
   if (!card) return;
 
-  const postId = parseInt(card.getAttribute('data-post-id'), 10);
+  var postId = parseInt(card.getAttribute('data-post-id'), 10);
   if (!postId) return;
 
-  const action = btn.getAttribute('data-action');
+  var action = btn.getAttribute('data-action');
 
   if (action === 'view') {
     window.location.href = 'post.html?postId=' + postId;
@@ -137,47 +133,28 @@ function handleProfilePostClick(event, profileUser, currentUser) {
   if (action === 'like') {
     if (!currentUser) return;
     updatePostById(postId, function (post) {
-      const likes = post.likes || [];
-      const idx = likes.indexOf(currentUser.id);
-      if (idx === -1) likes.push(currentUser.id);
-      else likes.splice(idx, 1);
+      var likes = post.likes || [];
+      var idx   = likes.indexOf(currentUser.id);
+      if (idx === -1) likes.push(currentUser.id); else likes.splice(idx, 1);
       post.likes = likes;
       return post;
     });
-
-    const likesCountEl = document.getElementById('profile-likes-count');
-    if (likesCountEl) {
-      likesCountEl.textContent = getLikesReceivedCount(profileUser.id);
-    }
-
-    renderProfilePosts(profileUser, currentUser);
+    renderProfilePosts(profileUser, posts, currentUser);
     return;
   }
 
   if (action === 'delete') {
     if (!currentUser) return;
-    const post = getPostById(postId);
+    var post = getPostById(postId);
     if (!post || post.authorId !== currentUser.id) return;
 
-    const ok = confirm('Delete this post?');
+    var ok = confirm('Delete this post?');
     if (!ok) return;
 
     removePostById(postId);
+    renderProfilePosts(profileUser, posts.filter(function (p) { return p.id !== postId; }), currentUser);
 
-    const likesCountEl = document.getElementById('profile-likes-count');
-    if (likesCountEl) {
-      likesCountEl.textContent = getLikesReceivedCount(profileUser.id);
-    }
-
-    const postCountEl = document.getElementById('profile-post-count');
-    if (postCountEl) {
-      const count = parseInt(postCountEl.textContent, 10);
-      if (!isNaN(count)) postCountEl.textContent = count - 1;
-    }
-
-    renderProfilePosts(profileUser, currentUser);
-
-    const msgEl = document.getElementById('profile-message');
+    var msgEl = document.getElementById('profile-message');
     if (msgEl) {
       msgEl.textContent = 'post deleted';
       msgEl.classList.remove('hidden');
@@ -185,18 +162,20 @@ function handleProfilePostClick(event, profileUser, currentUser) {
   }
 }
 
-function wireEditForm(profileUser, currentUser, users) {
+// ─── Edit profile form ────────────────────────────────────────────────────────
+
+function wireEditForm(profileUser, currentUser) {
   if (profileUser.id !== currentUser.id) return;
 
-  const editBtn = document.getElementById('edit-profile-btn');
-  const editSection = document.getElementById('profile-edit-section');
-  const cancelBtn = document.getElementById('profile-cancel-btn');
-  const editForm = document.getElementById('profile-edit-form');
-  const messageEl = document.getElementById('profile-message');
+  var editBtn     = document.getElementById('edit-profile-btn');
+  var editSection = document.getElementById('profile-edit-section');
+  var cancelBtn   = document.getElementById('profile-cancel-btn');
+  var editForm    = document.getElementById('profile-edit-form');
+  var messageEl   = document.getElementById('profile-message');
 
   editBtn.addEventListener('click', function () {
     document.getElementById('profile-avatar-input').value = profileUser.avatar || '';
-    document.getElementById('profile-bio-input').value = profileUser.bio || '';
+    document.getElementById('profile-bio-input').value    = profileUser.bio    || '';
     editSection.classList.remove('hidden');
     editBtn.classList.add('hidden');
     messageEl.classList.add('hidden');
@@ -207,33 +186,57 @@ function wireEditForm(profileUser, currentUser, users) {
     editBtn.classList.remove('hidden');
   });
 
-  editForm.addEventListener('submit', function (event) {
+  editForm.addEventListener('submit', async function (event) {
     event.preventDefault();
 
-    const newAvatar = document.getElementById('profile-avatar-input').value.trim();
-    const newBio = document.getElementById('profile-bio-input').value.trim();
+    var newAvatar = document.getElementById('profile-avatar-input').value.trim();
+    var newBio    = document.getElementById('profile-bio-input').value.trim();
 
-    profileUser.avatar = newAvatar;
-    profileUser.bio = newBio;
+    var saveBtn = document.getElementById('profile-save-btn');
+    if (saveBtn) saveBtn.disabled = true;
 
-    const allUsers = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '[]');
-    const index = allUsers.findIndex(function (u) { return u.id === profileUser.id; });
-    if (index !== -1) {
-      allUsers[index] = profileUser;
-      localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(allUsers));
+    try {
+      var res  = await fetch('/api/users/' + profileUser.id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ avatar: newAvatar, bio: newBio })
+      });
+      var data = await res.json();
+
+      if (!data.success) {
+        messageEl.textContent = data.error || 'failed to save';
+        messageEl.classList.remove('hidden');
+        return;
+      }
+
+      profileUser.avatar = data.user.avatar;
+      profileUser.bio    = data.user.bio;
+
+      // Update the cached x_current_user so sidebar reflects the new avatar
+      var cached = getCurrentUser();
+      if (cached && cached.id === profileUser.id) {
+        cached.avatar = data.user.avatar;
+        cached.bio    = data.user.bio;
+        localStorage.setItem('x_current_user', JSON.stringify(cached));
+      }
+
+      renderProfile(profileUser, currentUser);
+
+      var sidebarAvatar = document.getElementById('sidebar-avatar');
+      if (sidebarAvatar && sidebarAvatar.tagName === 'IMG') {
+        sidebarAvatar.src = newAvatar || DEFAULT_AVATAR;
+      }
+
+      editSection.classList.add('hidden');
+      editBtn.classList.remove('hidden');
+      messageEl.textContent = 'profile updated';
+      messageEl.classList.remove('hidden');
+
+    } catch (err) {
+      messageEl.textContent = 'network error — please try again';
+      messageEl.classList.remove('hidden');
+    } finally {
+      if (saveBtn) saveBtn.disabled = false;
     }
-
-    renderProfile(profileUser, currentUser, allUsers);
-
-    const sidebarAvatar = document.getElementById('sidebar-avatar');
-    if (sidebarAvatar && sidebarAvatar.tagName === 'IMG') {
-      sidebarAvatar.src = newAvatar || DEFAULT_AVATAR;
-    }
-
-    editSection.classList.add('hidden');
-    editBtn.classList.remove('hidden');
-
-    messageEl.textContent = 'profile updated';
-    messageEl.classList.remove('hidden');
   });
 }

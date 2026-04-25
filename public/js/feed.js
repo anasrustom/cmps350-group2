@@ -1,56 +1,27 @@
-function getFollowingPosts() {
-  const session = getSession();
-  if (!session || !session.currentUserId) return [];
-
-  const users = getUsers();
-  const me = users.find(function (u) { return u.id === session.currentUserId; });
-  if (!me) return [];
-
-  const posts = JSON.parse(localStorage.getItem(STORAGE_KEYS.POSTS) || '[]');
-  const filtered = posts.filter(function (p) {
-    return p.authorId === me.id || me.following.indexOf(p.authorId) !== -1;
-  });
-
-  filtered.sort(function (a, b) {
-    return new Date(b.timestamp) - new Date(a.timestamp);
-  });
-
-  return filtered;
+async function loadFeedPosts(tab) {
+  const currentUser = getCurrentUser();
+  if (!currentUser) return [];
+  try {
+    const res  = await fetch('/api/posts?tab=' + tab + '&userId=' + currentUser.id);
+    const data = await res.json();
+    return data.success ? data.posts : [];
+  } catch {
+    return [];
+  }
 }
 
-function getDiscoveryPosts() {
-  const session = getSession();
-  if (!session || !session.currentUserId) return [];
-
-  const users = getUsers();
-  const me = users.find(function (u) { return u.id === session.currentUserId; });
-  if (!me) return [];
-
-  const posts = JSON.parse(localStorage.getItem(STORAGE_KEYS.POSTS) || '[]');
-  const filtered = posts.filter(function (p) {
-    return p.authorId !== me.id && me.following.indexOf(p.authorId) === -1;
-  });
-
-  filtered.sort(function (a, b) {
-    return new Date(b.timestamp) - new Date(a.timestamp);
-  });
-
-  return filtered;
-}
-
-function renderFilteredFeed(tab) {
+async function renderFilteredFeed(tab) {
   const feedList = document.getElementById('feed-list');
   if (!feedList) return;
 
-  // if no tab given, read from the active tab button in the DOM
   if (!tab) {
     const activeBtn = document.querySelector('.feed-tab.active');
     tab = activeBtn ? activeBtn.getAttribute('data-tab') : 'following';
   }
 
-  const emptyState = document.getElementById('feed-empty-state');
+  const emptyState  = document.getElementById('feed-empty-state');
   const currentUser = getCurrentUser();
-  const posts = (tab === 'discovery') ? getDiscoveryPosts() : getFollowingPosts();
+  const posts       = await loadFeedPosts(tab);
 
   if (posts.length === 0) {
     feedList.innerHTML = '';
@@ -58,7 +29,7 @@ function renderFilteredFeed(tab) {
       const p = emptyState.querySelector('p');
       if (p) {
         p.textContent = tab === 'discovery'
-          ? 'No posts from users you don\'t follow yet'
+          ? "No posts from users you don't follow yet"
           : 'Follow someone to see their posts here';
       }
       emptyState.classList.remove('hidden');
@@ -71,11 +42,151 @@ function renderFilteredFeed(tab) {
 
   let html = '';
   for (let i = 0; i < posts.length; i++) {
-    const post = posts[i];
-    // call global functions directly — createPostCardHtml is not in window.Member3Posts
-    const author = getAuthorById(post.authorId);
-    html += createPostCardHtml(post, author, currentUser);
+    html += createPostCardHtml(posts[i], posts[i].author, currentUser);
   }
-
   feedList.innerHTML = html;
 }
+
+async function renderFeedPosts() {
+  await renderFilteredFeed();
+}
+
+function setFeedMessage(text) {
+  const messageEl = document.getElementById('feed-message');
+  if (!messageEl) return;
+  if (!text) { messageEl.classList.add('hidden'); return; }
+  messageEl.textContent = text;
+  messageEl.classList.remove('hidden');
+}
+
+function getDraftKey() {
+  const currentUser = getCurrentUser();
+  return currentUser ? 'postDraft_' + currentUser.id : 'postDraft_guest';
+}
+
+async function handleComposerSubmit(event) {
+  event.preventDefault();
+
+  const currentUser = getCurrentUser();
+  if (!currentUser) { window.location.href = 'login.html'; return; }
+
+  const composerText = document.getElementById('composer-text');
+  if (!composerText) return;
+
+  const content = composerText.value.trim();
+  if (!content) { setFeedMessage('post content cannot be empty'); return; }
+
+  const submitBtn = document.querySelector('#composer-form [type="submit"]');
+  if (submitBtn) submitBtn.disabled = true;
+
+  try {
+    const res  = await fetch('/api/posts', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify({ authorId: currentUser.id, content }),
+    });
+    const data = await res.json();
+
+    if (!data.success) {
+      setFeedMessage(data.error || 'failed to create post');
+      return;
+    }
+
+    composerText.value = '';
+    const composerCount = document.getElementById('composer-count');
+    if (composerCount) composerCount.textContent = '0';
+    localStorage.removeItem(getDraftKey());
+
+    await renderFilteredFeed();
+    setFeedMessage('post created');
+  } catch {
+    setFeedMessage('network error — please try again');
+  } finally {
+    if (submitBtn) submitBtn.disabled = false;
+  }
+}
+
+async function handleFeedClick(event) {
+  const actionButton = event.target.closest('button[data-action]');
+  if (!actionButton) return;
+
+  const card = actionButton.closest('[data-post-id]');
+  if (!card) return;
+
+  const postId = parseInt(card.getAttribute('data-post-id'), 10);
+  if (!postId) return;
+
+  const action = actionButton.getAttribute('data-action');
+
+  if (action === 'view') {
+    window.location.href = 'post.html?postId=' + postId;
+    return;
+  }
+
+  if (action === 'like') {
+    const currentUser = getCurrentUser();
+    if (!currentUser) { window.location.href = 'login.html'; return; }
+    try {
+      await fetch('/api/posts/' + postId + '/like', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ userId: currentUser.id }),
+      });
+      await renderFilteredFeed();
+    } catch {
+      setFeedMessage('network error — please try again');
+    }
+    return;
+  }
+
+  if (action === 'delete') {
+    const currentUser = getCurrentUser();
+    if (!currentUser) { window.location.href = 'login.html'; return; }
+
+    if (!confirm('Delete this post?')) return;
+
+    try {
+      const res  = await fetch('/api/posts/' + postId, {
+        method:  'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ userId: currentUser.id }),
+      });
+      const data = await res.json();
+      if (!data.success) { setFeedMessage(data.error || 'failed to delete'); return; }
+      await renderFilteredFeed();
+      setFeedMessage('post deleted');
+    } catch {
+      setFeedMessage('network error — please try again');
+    }
+  }
+}
+
+function initFeedPage() {
+  const composerForm = document.getElementById('composer-form');
+  const composerText = document.getElementById('composer-text');
+  const composerCount = document.getElementById('composer-count');
+  const feedList = document.getElementById('feed-list');
+
+  if (!composerForm || !composerText || !feedList) return;
+
+  composerForm.addEventListener('submit', handleComposerSubmit);
+
+  const draftKey   = getDraftKey();
+  const savedDraft = localStorage.getItem(draftKey);
+  if (savedDraft) {
+    composerText.value = savedDraft;
+    if (composerCount) composerCount.textContent = savedDraft.length;
+  }
+
+  composerText.addEventListener('input', function () {
+    if (composerCount) composerCount.textContent = composerText.value.length;
+    localStorage.setItem(draftKey, composerText.value);
+  });
+
+  feedList.addEventListener('click', handleFeedClick);
+  renderFeedPosts();
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+  initFeedPage();
+});

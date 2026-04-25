@@ -2,91 +2,91 @@
   {
     "id": 1,
     "authorId": 1,
-    "content": "Just got back from the National Museum of Qatar — absolutely stunning architecture. Highly recommend!",
+    "content": "submitted the project 2 minutes before the deadline. you can't rush quality.",
     "createdAt": "2025-01-15T10:00:00.000Z"
   },
   {
     "id": 2,
     "authorId": 2,
-    "content": "Working on a new branding project for a local startup. Can't wait to share the final result!",
+    "content": "finally understood how the DOM works. why did no one explain it this clearly before",
     "createdAt": "2025-01-20T14:30:00.000Z"
   },
   {
     "id": 3,
     "authorId": 3,
-    "content": "Qatar's economy continues to diversify. The new tech sector initiatives are really promising for graduates.",
+    "content": "this project deserves an A for sure. i spent more time on it than i spent sleeping this week.",
     "createdAt": "2025-02-01T09:15:00.000Z"
   },
   {
     "id": 4,
     "authorId": 4,
-    "content": "Found the most beautiful hidden beach near Al Wakrah. Crystal clear water and almost no one there!",
+    "content": "css grid is so much easier than i expected. why was i using tables my whole life",
     "createdAt": "2025-02-10T16:00:00.000Z"
   },
   {
     "id": 5,
     "authorId": 5,
-    "content": "Tried Damasca One last night — the lamb ouzi is unbelievable. Definitely top 3 in Doha.",
+    "content": "Dr. Fadi is a very kind man, God bless him.",
     "createdAt": "2025-02-14T20:00:00.000Z"
   },
   {
     "id": 6,
     "authorId": 6,
-    "content": "Reminder: free health screenings at the West Bay clinic this Saturday 9am–1pm. Spread the word!",
+    "content": "Türkiye çok güzel bir ülke. Tekrar Trabzon'a gitmek istiyorum, harika bir deneyimdi",
     "createdAt": "2025-02-20T08:00:00.000Z"
   },
   {
     "id": 7,
     "authorId": 1,
-    "content": "Desert camping last weekend was incredible. Stars like you've never seen in the city. 10/10 would go again.",
+    "content": "I am very scared from the Web Dev Final. someone please hold my hand",
     "createdAt": "2025-02-25T11:00:00.000Z"
   },
   {
     "id": 8,
     "authorId": 7,
-    "content": "Launched my new app today! It connects local tutors with students across Qatar. Check it out!",
+    "content": "stayed up until 4am fixing one bug. turns out i forgot a semicolon. i am fine. everything is fine.",
     "createdAt": "2025-03-01T12:00:00.000Z"
   },
   {
     "id": 9,
     "authorId": 3,
-    "content": "Great turnout at today's university debate on climate policy. The future of Qatar's environment is in good hands.",
+    "content": "my laptop fan sounds like a helicopter during compilation. she's been through a lot this semester.",
     "createdAt": "2025-03-05T18:00:00.000Z"
   },
   {
     "id": 10,
     "authorId": 2,
-    "content": "My latest design work just got featured in a regional creative magazine. So grateful for this community!",
+    "content": "the library is fully booked during finals week and i am not surprised at all. zero surprised.",
     "createdAt": "2025-03-10T09:30:00.000Z"
   },
   {
     "id": 11,
     "authorId": 5,
-    "content": "The new Korean BBQ spot in Lusail is worth every riyal. Pro tip: go on weekdays to avoid the wait.",
+    "content": "asked chatgpt to explain recursion. it explained recursion by explaining recursion. poetic.",
     "createdAt": "2025-03-15T19:00:00.000Z"
   },
   {
     "id": 12,
     "authorId": 4,
-    "content": "Sunrise at the Inland Sea (Khor Al Adaid) — no filter needed. Qatar's landscapes never disappoint.",
+    "content": "group project update: i did everything. the group project was a solo project. as always.",
     "createdAt": "2025-03-20T06:00:00.000Z"
   },
   {
     "id": 13,
     "authorId": 6,
-    "content": "PSA: stay hydrated as temperatures rise! Keep water with you and check on elderly neighbours.",
+    "content": "just learned what async/await actually does. i have been using it wrong for 3 months. moving on.",
     "createdAt": "2025-04-01T08:30:00.000Z"
   },
   {
     "id": 14,
     "authorId": 7,
-    "content": "500 users signed up in the first month! Thank you Qatar for the incredible support on this journey.",
+    "content": "studied for 6 hours straight. retained approximately nothing. the brain is a cruel device.",
     "createdAt": "2025-04-10T14:00:00.000Z"
   },
   {
     "id": 15,
     "authorId": 1,
-    "content": "Qatar Tech Festival next week — who's going? Would love to meet some of you in person!",
+    "content": "reminder that the semester is almost over and none of us are ready. we are in this together.",
     "createdAt": "2025-04-18T10:00:00.000Z"
   }
 ]

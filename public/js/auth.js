@@ -1,47 +1,68 @@
+// Default avatar SVG used throughout the app
 const DEFAULT_AVATAR = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='16' fill='%23dcfce7'/%3E%3Ccircle cx='16' cy='13' r='5' fill='%2322c55e'/%3E%3Cpath d='M6 28c0-5.5 4.5-10 10-10s10 4.5 10 10' fill='%2322c55e'/%3E%3C/svg%3E";
 
+// ─── Session helpers (called synchronously by feed.js, posts.js, follow.js) ──
+
+function getSession() {
+  return JSON.parse(localStorage.getItem(STORAGE_KEYS.SESSION) || 'null');
+}
+
+// Returns the cached user object stored at login/register time.
+// The object shape: { id, username, email, bio, avatar, joinedAt, following: [] }
+// `following` is an array of followed-user IDs, cached here so feed.js can
+// filter posts synchronously without a network round-trip.
+function getCurrentUser() {
+  var stored = localStorage.getItem('x_current_user');
+  if (!stored) return null;
+  try { return JSON.parse(stored); } catch (e) { return null; }
+}
+
+// ─── Persist session after a successful login or register ─────────────────────
+
+function saveSession(user) {
+  // x_session stores only currentUserId — this key is stable across all scripts
+  localStorage.setItem(STORAGE_KEYS.SESSION, JSON.stringify({ currentUserId: user.id }));
+  // x_current_user caches the full user object for synchronous getCurrentUser()
+  localStorage.setItem('x_current_user', JSON.stringify(user));
+}
+
+// ─── Register ─────────────────────────────────────────────────────────────────
+
 document.addEventListener('DOMContentLoaded', function () {
-  const registerForm = document.getElementById('register-form');
-  if (registerForm) {
-    registerForm.addEventListener('submit', function (event) {
-      event.preventDefault();
-      handleRegister();
-    });
-  }
+  var registerForm = document.getElementById('register-form');
+  if (!registerForm) return;
+  registerForm.addEventListener('submit', function (event) {
+    event.preventDefault();
+    handleRegister();
+  });
 });
 
-function handleRegister() {
-  const username = document.getElementById('register-username').value.trim();
-  const email = document.getElementById('register-email').value.trim();
-  const password = document.getElementById('register-password').value;
-  const confirm = document.getElementById('register-confirm-password').value;
+async function handleRegister() {
+  var username = document.getElementById('register-username').value.trim();
+  var email    = document.getElementById('register-email').value.trim();
+  var password = document.getElementById('register-password').value;
+  var confirm  = document.getElementById('register-confirm-password').value;
 
   clearError('register-username-error');
   clearError('register-email-error');
   clearError('register-password-error');
   clearError('register-confirm-password-error');
 
-  const messageEl = document.getElementById('register-message');
+  var messageEl = document.getElementById('register-message');
   messageEl.classList.add('hidden');
 
-  let valid = true;
+  var valid = true;
 
   if (!username) {
     showError('register-username-error', 'username is required');
     valid = false;
   }
 
-  const emailError = validateEmail(email);
-  if (emailError) {
-    showError('register-email-error', emailError);
-    valid = false;
-  }
+  var emailError = validateEmail(email);
+  if (emailError) { showError('register-email-error', emailError); valid = false; }
 
-  const passwordError = validatePassword(password);
-  if (passwordError) {
-    showError('register-password-error', passwordError);
-    valid = false;
-  }
+  var passwordError = validatePassword(password);
+  if (passwordError) { showError('register-password-error', passwordError); valid = false; }
 
   if (!passwordError && password !== confirm) {
     showError('register-confirm-password-error', 'passwords do not match');
@@ -50,114 +71,105 @@ function handleRegister() {
 
   if (!valid) return;
 
-  const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '[]');
+  var submitBtn = document.querySelector('#register-form [type="submit"]');
+  if (submitBtn) submitBtn.disabled = true;
 
-  const usernameTaken = users.find(function (u) {
-    return u.username.toLowerCase() === username.toLowerCase();
-  });
-  if (usernameTaken) {
-    showError('register-username-error', 'username is already taken');
-    return;
+  try {
+    var res  = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: username, email: email, password: password })
+    });
+    var data = await res.json();
+
+    if (!data.success) {
+      var msg = data.error || 'registration failed';
+      if (msg.includes('username')) {
+        showError('register-username-error', msg);
+      } else if (msg.includes('email')) {
+        showError('register-email-error', msg);
+      } else {
+        messageEl.textContent = msg;
+        messageEl.classList.remove('hidden');
+      }
+      return;
+    }
+
+    // New accounts start with no follows — include empty array for feed.js compat
+    saveSession(Object.assign({}, data.user, { following: [] }));
+    window.location.href = 'index.html';
+
+  } catch (err) {
+    messageEl.textContent = 'network error — please try again';
+    messageEl.classList.remove('hidden');
+  } finally {
+    if (submitBtn) submitBtn.disabled = false;
   }
-
-  const emailTaken = users.find(function (u) {
-    return u.email.toLowerCase() === email.toLowerCase();
-  });
-  if (emailTaken) {
-    showError('register-email-error', 'email is already registered');
-    return;
-  }
-
-  const newUser = {
-    id: Date.now(),
-    username: username,
-    email: email,
-    password: password,
-    bio: '',
-    avatar: '',
-    following: [],
-    joinedAt: new Date().toISOString()
-  };
-
-  users.push(newUser);
-  localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
-
-  const session = { currentUserId: newUser.id };
-  localStorage.setItem(STORAGE_KEYS.SESSION, JSON.stringify(session));
-
-  window.location.href = 'index.html';
 }
 
+// ─── Login ────────────────────────────────────────────────────────────────────
+
 document.addEventListener('DOMContentLoaded', function () {
-  const loginForm = document.getElementById('login-form');
-  if (loginForm) {
-    loginForm.addEventListener('submit', function (event) {
-      event.preventDefault();
-      handleLogin();
-    });
-  }
+  var loginForm = document.getElementById('login-form');
+  if (!loginForm) return;
+  loginForm.addEventListener('submit', function (event) {
+    event.preventDefault();
+    handleLogin();
+  });
 });
 
-function handleLogin() {
-  const email = document.getElementById('login-email').value.trim();
-  const password = document.getElementById('login-password').value;
+async function handleLogin() {
+  var email    = document.getElementById('login-email').value.trim();
+  var password = document.getElementById('login-password').value;
 
   clearError('login-email-error');
   clearError('login-password-error');
 
-  const messageEl = document.getElementById('login-message');
+  var messageEl = document.getElementById('login-message');
   messageEl.classList.add('hidden');
 
-  const emailError = validateEmail(email);
-  if (emailError) {
-    showError('login-email-error', emailError);
-    return;
-  }
+  var emailError = validateEmail(email);
+  if (emailError) { showError('login-email-error', emailError); return; }
 
-  if (!password) {
-    showError('login-password-error', 'password is required');
-    return;
-  }
+  if (!password) { showError('login-password-error', 'password is required'); return; }
 
-  const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '[]');
+  var submitBtn = document.querySelector('#login-form [type="submit"]');
+  if (submitBtn) submitBtn.disabled = true;
 
-  const user = users.find(function (u) {
-    return u.email.toLowerCase() === email.toLowerCase();
-  });
+  try {
+    var res  = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, password: password })
+    });
+    var data = await res.json();
 
-  if (!user || user.password !== password) {
-    messageEl.textContent = 'incorrect email or password';
+    if (!data.success) {
+      messageEl.textContent = data.error || 'incorrect email or password';
+      messageEl.classList.remove('hidden');
+      return;
+    }
+
+    // data.user includes `following: [id, ...]` from the login API
+    saveSession(data.user);
+    window.location.href = 'index.html';
+
+  } catch (err) {
+    messageEl.textContent = 'network error — please try again';
     messageEl.classList.remove('hidden');
-    return;
+  } finally {
+    if (submitBtn) submitBtn.disabled = false;
   }
-
-  const session = { currentUserId: user.id };
-  localStorage.setItem(STORAGE_KEYS.SESSION, JSON.stringify(session));
-
-  window.location.href = 'index.html';
 }
 
-// helpers available to all scripts loaded after auth.js
-
-function getSession() {
-  return JSON.parse(localStorage.getItem(STORAGE_KEYS.SESSION) || 'null');
-}
-
-function getCurrentUser() {
-  const session = getSession();
-  if (!session || !session.currentUserId) return null;
-  const users = JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '[]');
-  return users.find(function (u) { return u.id === session.currentUserId; }) || null;
-}
-
-// page guard + sidebar + logout
+// ─── Page guard, sidebar, and logout ─────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', function () {
-  const onGuestPage = document.getElementById('login-form') || document.getElementById('register-form');
-  const onAppPage = document.getElementById('logout-btn');
+  var onGuestPage = document.getElementById('login-form') || document.getElementById('register-form');
+  var onAppPage   = document.getElementById('logout-btn');
 
-  const session = getSession();
-  const loggedIn = session && session.currentUserId;
+  var session  = getSession();
+  var loggedIn = session && session.currentUserId;
 
   if (onGuestPage && loggedIn) {
     window.location.href = 'index.html';
@@ -170,19 +182,19 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   if (onAppPage && loggedIn) {
-    const user = getCurrentUser();
+    var user = getCurrentUser();
     if (user) {
-      const nameEl = document.getElementById('sidebar-user-name');
-      const handleEl = document.getElementById('sidebar-user-handle');
-      const avatarEl = document.getElementById('sidebar-avatar');
+      var nameEl   = document.getElementById('sidebar-user-name');
+      var handleEl = document.getElementById('sidebar-user-handle');
+      var avatarEl = document.getElementById('sidebar-avatar');
 
-      if (nameEl) nameEl.textContent = user.username;
+      if (nameEl)   nameEl.textContent = user.username;
       if (handleEl) handleEl.textContent = '@' + user.username;
       if (avatarEl && avatarEl.tagName === 'IMG') {
         avatarEl.src = user.avatar || DEFAULT_AVATAR;
       }
 
-      const composerAvatar = document.getElementById('composer-avatar');
+      var composerAvatar = document.getElementById('composer-avatar');
       if (composerAvatar && composerAvatar.tagName === 'IMG') {
         composerAvatar.src = user.avatar || DEFAULT_AVATAR;
       }
@@ -190,6 +202,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     document.getElementById('logout-btn').addEventListener('click', function () {
       localStorage.removeItem(STORAGE_KEYS.SESSION);
+      localStorage.removeItem('x_current_user');
       window.location.href = 'login.html';
     });
   }

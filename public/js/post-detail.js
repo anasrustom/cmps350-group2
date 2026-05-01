@@ -1,3 +1,6 @@
+// Single-post page. The post itself comes from GET /api/posts/[id];
+// likes and deletes go through the corresponding API routes.
+
 function setPostMessage(text) {
 	const messageEl = document.getElementById('post-message');
 	if (!messageEl) return;
@@ -12,8 +15,8 @@ function setPostMessage(text) {
 }
 
 function setPostUnavailableState() {
-	const detailEl = document.getElementById('post-detail');
-	const commentForm = document.getElementById('comment-form');
+	const detailEl     = document.getElementById('post-detail');
+	const commentForm  = document.getElementById('comment-form');
 	const commentsList = document.getElementById('comments-list');
 
 	if (detailEl) detailEl.classList.add('hidden');
@@ -21,28 +24,37 @@ function setPostUnavailableState() {
 	if (commentsList) commentsList.classList.add('hidden');
 }
 
-function renderPostDetail(postId) {
-	if (!window.Member3Posts) return null;
+async function fetchPostDetail(postId) {
+	try {
+		const res  = await fetch('/api/posts/' + postId);
+		const data = await res.json();
+		return data.success ? data.post : null;
+	} catch {
+		return null;
+	}
+}
 
-	const post = window.Member3Posts.getPostById(postId);
-	if (!post) return null;
+function renderPostDetail(post) {
+	if (!post) return;
 
-	const author = window.Member3Posts.getAuthorById(post.authorId);
+	const helpers = window.Member3Posts || {};
+	const formatTime = helpers.formatPostTime || function () { return ''; };
+
+	const author      = post.author || null;
 	const currentUser = getCurrentUser();
+	const username    = author ? author.username : 'unknown';
+	const avatar      = author && author.avatar ? author.avatar : DEFAULT_AVATAR;
+	const isLiked     = currentUser && post.likes && post.likes.indexOf(currentUser.id) !== -1;
+	const canDelete   = currentUser && post.authorId === currentUser.id;
 
-	const avatarEl = document.getElementById('post-author-avatar');
-	const contentEl = document.getElementById('post-content');
-	const authorNameEl = document.getElementById('post-author-name');
-	const handleEl = document.getElementById('post-author-handle');
-	const timeEl = document.getElementById('post-time');
-	const likeBtn = document.getElementById('like-post-btn');
+	const avatarEl    = document.getElementById('post-author-avatar');
+	const contentEl   = document.getElementById('post-content');
+	const authorEl    = document.getElementById('post-author-name');
+	const handleEl    = document.getElementById('post-author-handle');
+	const timeEl      = document.getElementById('post-time');
+	const likeBtn     = document.getElementById('like-post-btn');
 	const likeCountEl = document.getElementById('post-like-count');
-	const deleteBtn = document.getElementById('delete-post-btn');
-
-	const username = author ? author.username : 'unknown';
-	const avatar = author && author.avatar ? author.avatar : DEFAULT_AVATAR;
-	const isLiked = currentUser && post.likes && post.likes.indexOf(currentUser.id) !== -1;
-	const canDelete = currentUser && post.authorId === currentUser.id;
+	const deleteBtn   = document.getElementById('delete-post-btn');
 
 	if (avatarEl) {
 		avatarEl.style.backgroundImage = 'url("' + avatar + '")';
@@ -53,13 +65,13 @@ function renderPostDetail(postId) {
 
 	if (contentEl) contentEl.textContent = post.content;
 
-	if (authorNameEl) {
-		authorNameEl.textContent = username;
-		authorNameEl.href = 'profile.html?userId=' + post.authorId;
+	if (authorEl) {
+		authorEl.textContent = username;
+		authorEl.href = 'profile.html?userId=' + post.authorId;
 	}
 
 	if (handleEl) handleEl.textContent = '@' + username;
-	if (timeEl) timeEl.textContent = window.Member3Posts.formatPostTime(post.timestamp);
+	if (timeEl) timeEl.textContent = formatTime(post.timestamp);
 
 	if (likeBtn) {
 		likeBtn.textContent = isLiked ? 'liked' : 'like';
@@ -76,11 +88,9 @@ function renderPostDetail(postId) {
 		if (canDelete) deleteBtn.classList.remove('hidden');
 		else deleteBtn.classList.add('hidden');
 	}
-
-	return post;
 }
 
-function initPostDetailPage() {
+async function initPostDetailPage() {
 	const postDetailEl = document.getElementById('post-detail');
 	if (!postDetailEl || !window.Member3Posts) return;
 
@@ -91,56 +101,68 @@ function initPostDetailPage() {
 		return;
 	}
 
-	let post = renderPostDetail(postId);
+	let post = await fetchPostDetail(postId);
 	if (!post) {
 		setPostMessage('post not found');
 		setPostUnavailableState();
 		return;
 	}
 
+	renderPostDetail(post);
+
 	const likeBtn = document.getElementById('like-post-btn');
 	if (likeBtn) {
-		likeBtn.addEventListener('click', function () {
+		likeBtn.addEventListener('click', async function () {
 			const currentUser = getCurrentUser();
 			if (!currentUser) {
 				window.location.href = 'login.html';
 				return;
 			}
 
-			window.Member3Posts.updatePostById(postId, function (oldPost) {
-				const likes = oldPost.likes || [];
-				const index = likes.indexOf(currentUser.id);
-				if (index === -1) likes.push(currentUser.id);
-				else likes.splice(index, 1);
-				oldPost.likes = likes;
-				return oldPost;
-			});
+			try {
+				const res  = await fetch('/api/posts/' + postId + '/like', {
+					method:  'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body:    JSON.stringify({ userId: currentUser.id }),
+				});
+				const data = await res.json();
+				if (!data.success) return;
 
-			post = renderPostDetail(postId);
-			if (window.Member3Comments && window.Member3Comments.renderCommentsForPost) {
-				window.Member3Comments.renderCommentsForPost(postId);
+				post.likes = data.likes;
+				renderPostDetail(post);
+			} catch {
+				setPostMessage('network error — please try again');
 			}
 		});
 	}
 
 	const deleteBtn = document.getElementById('delete-post-btn');
 	if (deleteBtn) {
-		deleteBtn.addEventListener('click', function () {
+		deleteBtn.addEventListener('click', async function () {
 			const currentUser = getCurrentUser();
 			if (!currentUser) {
 				window.location.href = 'login.html';
 				return;
 			}
 
-			const latestPost = window.Member3Posts.getPostById(postId);
-			if (!latestPost || latestPost.authorId !== currentUser.id) return;
+			if (post.authorId !== currentUser.id) return;
+			if (!confirm('Delete this post?')) return;
 
-			const ok = confirm('Delete this post?');
-			if (!ok) return;
-
-			window.Member3Posts.removePostById(postId);
-			setPostMessage('post deleted');
-			window.location.href = 'index.html';
+			try {
+				const res  = await fetch('/api/posts/' + postId, {
+					method:  'DELETE',
+					headers: { 'Content-Type': 'application/json' },
+					body:    JSON.stringify({ userId: currentUser.id }),
+				});
+				const data = await res.json();
+				if (!data.success) {
+					setPostMessage(data.error || 'failed to delete');
+					return;
+				}
+				window.location.href = 'index.html';
+			} catch {
+				setPostMessage('network error — please try again');
+			}
 		});
 	}
 }

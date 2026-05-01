@@ -1,14 +1,11 @@
-// override posts.js's renderFeedPosts so all internal calls (like/delete/create)
-// also re-render the correct filtered tab instead of showing all posts
-function renderFeedPosts() {
-  renderFilteredFeed();
-}
+// Home-page tab wiring. Initial render uses the default "following" tab;
+// each tab button switches feeds via renderFilteredFeed (defined in feed.js).
 
 document.addEventListener('DOMContentLoaded', function () {
-  // render the default "following" tab on load
+  if (!document.getElementById('feed-list')) return;
+
   renderFilteredFeed('following');
 
-  // wire tab buttons
   const tabButtons = document.querySelectorAll('.feed-tab');
   tabButtons.forEach(function (btn) {
     btn.addEventListener('click', function () {

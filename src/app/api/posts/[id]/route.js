@@ -1,5 +1,18 @@
 import { NextResponse } from 'next/server';
-import { deletePost } from '@lib/post-repo';
+import { deletePost, getPostById } from '@lib/post-repo';
+
+export async function GET(_request, { params }) {
+  try {
+    const { id } = await params;
+    const post = await getPostById(id);
+    if (!post) {
+      return NextResponse.json({ success: false, error: 'post not found' }, { status: 404 });
+    }
+    return NextResponse.json({ success: true, post });
+  } catch (err) {
+    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
+  }
+}
 
 export async function DELETE(request, { params }) {
   try {

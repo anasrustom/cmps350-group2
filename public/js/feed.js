@@ -1,3 +1,6 @@
+// Home-feed composer and feed list. All persistence happens through
+// /api/posts.* — no localStorage reads/writes for post data.
+
 async function loadFeedPosts(tab) {
   const currentUser = getCurrentUser();
   if (!currentUser) return [];
@@ -59,11 +62,6 @@ function setFeedMessage(text) {
   messageEl.classList.remove('hidden');
 }
 
-function getDraftKey() {
-  const currentUser = getCurrentUser();
-  return currentUser ? 'postDraft_' + currentUser.id : 'postDraft_guest';
-}
-
 async function handleComposerSubmit(event) {
   event.preventDefault();
 
@@ -95,7 +93,6 @@ async function handleComposerSubmit(event) {
     composerText.value = '';
     const composerCount = document.getElementById('composer-count');
     if (composerCount) composerCount.textContent = '0';
-    localStorage.removeItem(getDraftKey());
 
     await renderFilteredFeed();
     setFeedMessage('post created');
@@ -162,29 +159,20 @@ async function handleFeedClick(event) {
 }
 
 function initFeedPage() {
-  const composerForm = document.getElementById('composer-form');
-  const composerText = document.getElementById('composer-text');
+  const composerForm  = document.getElementById('composer-form');
+  const composerText  = document.getElementById('composer-text');
   const composerCount = document.getElementById('composer-count');
-  const feedList = document.getElementById('feed-list');
+  const feedList      = document.getElementById('feed-list');
 
   if (!composerForm || !composerText || !feedList) return;
 
   composerForm.addEventListener('submit', handleComposerSubmit);
 
-  const draftKey   = getDraftKey();
-  const savedDraft = localStorage.getItem(draftKey);
-  if (savedDraft) {
-    composerText.value = savedDraft;
-    if (composerCount) composerCount.textContent = savedDraft.length;
-  }
-
   composerText.addEventListener('input', function () {
     if (composerCount) composerCount.textContent = composerText.value.length;
-    localStorage.setItem(draftKey, composerText.value);
   });
 
   feedList.addEventListener('click', handleFeedClick);
-  renderFeedPosts();
 }
 
 document.addEventListener('DOMContentLoaded', function () {
